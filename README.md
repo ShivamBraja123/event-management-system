@@ -1,69 +1,153 @@
 # EventManager
 
-EventManager is a full-stack event management platform for discovering,
-organizing, registering for, and reviewing events.
+A full-stack event management platform for discovering, organizing, registering for, and managing events. The application provides separate experiences for **Customers, Organizers, and Administrators**, with event discovery, registrations, digital tickets, reviews, participant management, check-ins, moderation, and real-time updates.
 
-## Features
+## ✨ Features
 
-- Browse, search, filter, and paginate approved events
-- Customer registration and registration history
-- Branded tickets with QR codes and PDF download
-- Customer reviews and event ratings
-- Organizer event creation and management
-- Organizer participant lists, live check-in support, and CSV export
-- Admin event moderation and user blocking
-- Role-based customer, organizer, and admin dashboards
-- Socket.IO announcements and check-in updates
-- Responsive UI with dark-mode support
-- Public event posters with a local fallback for missing images
+### 👤 Customer
 
-## Roles
+* Browse approved events
+* Search, filter, and paginate events
+* View detailed event information
+* Register for events
+* View registration history
+* Access branded digital tickets
+* Generate QR-code tickets
+* Download tickets as PDF
+* Review completed events
+* Rate events
 
-- **Customer**: discover events, register, view tickets, download PDFs, and
-  review completed events.
-- **Organizer**: create events, manage participants, export attendance CSVs,
-  and perform check-ins.
-- **Admin**: review pending events, approve or reject events, and manage users.
+### 🎤 Organizer
 
-## Technology stack
+* Create and manage events
+* Manage registered participants
+* View participant information
+* Perform participant check-ins
+* Export attendance data as CSV
+* Send real-time event announcements
+* Monitor event activity
 
-- **Frontend**: React 19, Vite, React Router, Axios, Tailwind CSS,
-  Socket.IO Client
-- **Backend**: Node.js, Express 5, Mongoose, JWT, Multer, Nodemailer,
-  Socket.IO
-- **Database**: MongoDB
-- **Tickets**: QRCode, html2canvas, and jsPDF
+### 🛡️ Administrator
 
-## Project structure
+* Review pending events
+* Approve or reject events
+* Manage users
+* Block users when required
+* Monitor platform activity
+* Access administrative dashboards and statistics
+
+## 🚀 Highlights
+
+* Role-based authentication and authorization
+* JWT-based authentication
+* Real-time communication using Socket.IO
+* QR-code based digital tickets
+* PDF ticket generation
+* Event reviews and ratings
+* Participant check-in system
+* CSV attendance export
+* Event moderation workflow
+* Responsive interface
+* Dark-mode support
+* Lazy-loaded event images
+* Local fallback for unavailable event posters
+* Seeded dataset containing **1,500 generated events**
+
+## 🛠️ Technology Stack
+
+### Frontend
+
+* React 19
+* Vite
+* React Router
+* Axios
+* Tailwind CSS
+* Socket.IO Client
+
+### Backend
+
+* Node.js
+* Express 5
+* Mongoose
+* JWT
+* Multer
+* Nodemailer
+* Socket.IO
+
+### Database
+
+* MongoDB
+
+### Ticket Generation
+
+* QRCode
+* html2canvas
+* jsPDF
+
+## 📁 Project Structure
 
 ```text
-backend/    Express API, models, controllers, routes, uploads, and Socket.IO
-frontend/   React/Vite application
+Event-management-system/
+│
+├── backend/
+│   ├── config/
+│   ├── controllers/
+│   ├── models/
+│   ├── routes/
+│   ├── uploads/
+│   └── ...
+│
+├── frontend/
+│   ├── public/
+│   ├── src/
+│   └── ...
+│
+├── .gitignore
+└── README.md
 ```
 
-## Local setup
+## ⚙️ Local Setup
 
 ### Prerequisites
 
-- Node.js 18 or newer
-- MongoDB running locally or a reachable MongoDB connection string
+Make sure the following are installed:
 
-### Install
+* Node.js 18 or newer
+* MongoDB running locally or a reachable MongoDB instance
+* Git
+
+### 1. Clone the repository
 
 ```bash
-git clone https://github.com/AnshulTikariha/Event-management-system.git
-cd Event-management-system
+git clone https://github.com/ShivamBraja123/event-management-system.git
+cd event-management-system
+```
 
+### 2. Install backend dependencies
+
+```bash
 cd backend
 npm install
+```
 
+### 3. Install frontend dependencies
+
+```bash
 cd ../frontend
 npm install
 ```
 
-### Environment variables
+## 🔐 Environment Variables
 
-Create `backend/.env` locally. Never commit it.
+Create a local environment file:
+
+```text
+backend/.env
+```
+
+**Never commit this file to GitHub.**
+
+Example configuration:
 
 ```env
 PORT=5050
@@ -72,81 +156,178 @@ JWT_SECRET=replace-with-a-long-local-secret
 CLIENT_ORIGIN=http://localhost:5173
 ```
 
-`MONGODB_URI` is also accepted for compatibility. Optional SMTP variables are
-available in [`backend/.env.example`](./backend/.env.example) for registration
-email notifications.
+`MONGODB_URI` is also supported for compatibility.
 
-### Run the application
+Optional SMTP configuration is available in:
 
-In one terminal:
+```text
+backend/.env.example
+```
+
+SMTP configuration is required only if email notifications are being used.
+
+## ▶️ Running the Application
+
+### Start the backend
+
+Open a terminal:
 
 ```bash
 cd backend
 npm run dev
 ```
 
-In a second terminal:
+The backend runs on:
+
+```text
+http://localhost:5050
+```
+
+### Start the frontend
+
+Open another terminal:
 
 ```bash
 cd frontend
 npm run dev
 ```
 
-The frontend runs at `http://localhost:5173` and the backend runs at
-`http://localhost:5050`.
+The frontend runs on:
 
-## Demo accounts
+```text
+http://localhost:5173
+```
 
-These are intentionally safe local demo credentials created by the seed:
+## 🔑 Demo Accounts
 
-- Customer: `customer@example.com` / `password`
-- Organizer: `organizer@example.com` / `password`
-- Admin: `admin@example.com` / `password`
+The seed provides development-only demo accounts:
 
-Change demo credentials before using the application outside local
-development.
+| Role      | Email                                                 | Password |
+| --------- | ----------------------------------------------------- | -------- |
+| Customer  | [customer@example.com](mailto:customer@example.com)   | password |
+| Organizer | [organizer@example.com](mailto:organizer@example.com) | password |
+| Admin     | [admin@example.com](mailto:admin@example.com)         | password |
 
-## API
+> **Note:** These credentials are intended for local development and demonstration only. Change them before using the application outside a local development environment.
 
-The backend exposes:
+## 🔌 API
 
-- `/api/auth` for signup and login
-- `/api/events` for event browsing and management
-- `/api/registrations` for registration, tickets, participants, check-ins, and
-  CSV export
-- `/api/reviews` for event reviews
-- `/api/admin` for moderation and user management
-- `/api/stats` for recommendations and dashboard statistics
-- `/api/health` for a health check
+The backend provides the following major API modules:
 
-JWT authentication is sent as a bearer token by the frontend.
+| Endpoint             | Purpose                                                          |
+| -------------------- | ---------------------------------------------------------------- |
+| `/api/auth`          | Authentication and user accounts                                 |
+| `/api/events`        | Event discovery and management                                   |
+| `/api/registrations` | Registrations, tickets, participants, check-ins, and CSV exports |
+| `/api/reviews`       | Event reviews and ratings                                        |
+| `/api/admin`         | Event moderation and user management                             |
+| `/api/stats`         | Recommendations and dashboard statistics                         |
+| `/api/health`        | Backend health check                                             |
 
-## Database seeding
+Authentication uses JWT bearer tokens.
+
+## 🌱 Database Seeding
+
+To populate the application with the generated dataset:
 
 ```bash
 cd backend
 npm run seed
 ```
 
-The seed is safe to rerun. It refreshes only generated `@seed.event` accounts
-and events marked with the internal `seed-2026` tag, preserving other
-application data and the three demo accounts. The current dataset contains
-1,500 generated events, 100 in each supported category, realistic organizer
-and customer activity, registrations with QR data, and reviews.
+The seed process is designed to be safely rerunnable.
 
-Generated event posters use category-oriented public Unsplash URLs. Event cards
-load images lazily and use `frontend/public/placeholder.svg` only as a
-client-side fallback.
+It refreshes generated records associated with the internal seed configuration while preserving existing application data and the three demo accounts.
 
-## Validation and limitations
+### Generated Dataset
 
-- MongoDB must be available before starting the backend.
-- Email notifications require valid SMTP configuration; registration itself
-  does not depend on email delivery.
-- Public Unsplash image availability depends on the remote service and network.
-- The application is configured for local development and is not claimed as a
-  deployed production service.
+The current dataset contains:
 
-## License
+* **1,500 generated events**
+* **100 events per supported category**
+* Realistic organizer activity
+* Customer activity
+* Event registrations
+* QR ticket data
+* Event reviews
+* Category-specific event posters
 
-MIT
+Generated event posters use public Unsplash image URLs.
+
+The frontend loads event images lazily and uses:
+
+```text
+frontend/public/placeholder.svg
+```
+
+as a client-side fallback when an image cannot be loaded.
+
+## 🔄 Application Flow
+
+```text
+Customer
+   │
+   ├── Browse Events
+   ├── Search / Filter
+   ├── Register
+   ├── Receive Digital Ticket
+   ├── QR Code Check-in
+   └── Review Event
+            │
+            ▼
+       Event Platform
+            │
+     ┌──────┴──────┐
+     ▼             ▼
+ Organizer       Admin
+     │             │
+     ├── Manage    ├── Review Events
+     │   Events    ├── Approve / Reject
+     ├── View      └── Manage Users
+     │   Participants
+     ├── Check-in
+     └── Export CSV
+```
+
+## 🔒 Security
+
+The project includes:
+
+* JWT authentication
+* Role-based authorization
+* Password hashing
+* Environment-based secrets
+* Protected API routes
+* `.env` exclusion through `.gitignore`
+* Dependency and build-output exclusions
+* No real credentials committed to the repository
+
+## 🧪 Validation & Limitations
+
+### Requirements
+
+* MongoDB must be available before starting the backend.
+* SMTP configuration is required for email notifications.
+
+### Current limitations
+
+* Email notifications depend on external SMTP configuration.
+* Public event images depend on the availability of the remote image service.
+* The project is configured primarily for local development and demonstration.
+* It is not currently presented as a production-hosted service.
+
+## 📌 Project Status
+
+**Status: Completed**
+
+The repository contains the complete EventManager application, including the frontend, backend, database models, authentication, event management, registrations, ticket generation, reviews, administration, real-time features, and generated event dataset.
+
+## 📄 License
+
+This project is licensed under the **MIT License**.
+
+## 👨‍💻 Author
+
+**Shivam Bhudhiraja**
+
+GitHub: [ShivamBraja123](https://github.com/ShivamBraja123)
