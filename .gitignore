@@ -3,11 +3,18 @@ backend/node_modules/
 frontend/node_modules/
 
 .env
-.env.local
-backend/.env
-frontend/.env
+.env.*
+!.env.example
+backend/.env.*
+!backend/.env.example
+frontend/.env.*
+!frontend/.env.example
 
 frontend/dist/
+**/dist/
+**/coverage/
+**/.cache/
+**/.vite/
 backend/uploads/
 *.csv
 

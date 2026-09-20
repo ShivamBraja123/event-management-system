@@ -17,7 +17,10 @@ const eventSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+eventSchema.index({ status: 1, date: 1 });
+eventSchema.index({ category: 1, date: 1 });
+eventSchema.index({ title: 'text', description: 'text', location: 'text' });
+
 export const Event = mongoose.model('Event', eventSchema);
 export default Event;
-
 

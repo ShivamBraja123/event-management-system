@@ -41,7 +41,7 @@ function Navbar() {
   return (
     <header className="sticky top-0 z-10 bg-white/70 dark:bg-slate-900/70 backdrop-blur border-b border-slate-200 dark:border-slate-800">
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-        <Link to="/" className="font-extrabold text-lg tracking-tight">EventManager</Link>
+        <Link to="/" className="font-extrabold text-lg tracking-tight">Evenzup</Link>
         <nav className="flex items-center gap-4 text-sm">
           <Link to="/" className={location.pathname==='/'?'font-semibold underline':''}>Home</Link>
           {user && (
@@ -85,10 +85,11 @@ function Layout({ children }) {
       <footer className="mt-10 border-t border-gray-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 text-sm text-gray-600 dark:text-slate-400 flex items-center justify-between">
           <div className="text-left">
-            <p>© 2025 Developer Viewpoint. All rights reserved.</p>
-            <p className="mt-0.5">Free source code available on GitHub (MIT Licensed).</p>
-          </div>
-          <p className="text-right">Developed by <span className="font-semibold text-gray-800 dark:text-slate-200">Anshul</span>.</p>
+           {/* <p>© 2025 Developer Viewpoint. All rights reserved.</p> */}
+           {/* <p className="mt-0.5">Free source code available on GitHub (MIT Licensed).</p> */}
+           </div>
+         {/* <p className="text-right">Developed by <span className="font-semibold text-gray-800 dark:text-slate-200">Anshul</span>.</p> */}
+
         </div>
       </footer>
     </div>

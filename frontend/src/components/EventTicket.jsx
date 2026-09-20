@@ -46,7 +46,9 @@ export default function EventTicket({ registration, user, onDownload, onReady })
 
   useEffect(() => {
     if (typeof onReady === 'function') onReady(downloadTicket);
-  }, [onReady]);
+    // The parent stores this callback; rerunning it whenever the parent renders causes an update loop.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const event = registration.event;
   const eventDate = new Date(event?.date);
@@ -66,7 +68,7 @@ export default function EventTicket({ registration, user, onDownload, onReady })
             {/* Top brand row */}
             <div className="flex items-center justify-between mb-6">
               <div>
-                <div className="text-sm tracking-widest text-fuchsia-300">EVENT MANAGER</div>
+                <div className="text-sm tracking-widest text-fuchsia-300">EVENZUP</div>
                 <div className="text-xs text-indigo-200">Official Event Ticket</div>
               </div>
             </div>
@@ -112,9 +114,9 @@ export default function EventTicket({ registration, user, onDownload, onReady })
 
             {/* Footer small */}
                           <div className="mt-auto text-center text-[10px] text-indigo-100/80">
-                <div className="font-semibold">EventManager</div>
+                <div className="font-semibold">Evenzup</div>
                 <div>© 2025 All rights reserved</div>
-                <div className="opacity-70">www.eventmanager.com</div>
+                <div className="opacity-70">www.evenzup.com</div>
               </div>
           </div>
         </div>

@@ -17,6 +17,9 @@ export const registerForEvent = async (req, res) => {
     } catch (_) {}
     res.status(201).json({ registration: reg });
   } catch (err) {
+    if (err.code === 11000) {
+      return res.status(400).json({ message: 'You are already registered for this event.' });
+    }
     res.status(500).json({ message: err.message });
   }
 };
@@ -73,5 +76,4 @@ export const exportParticipantsCsv = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-
 

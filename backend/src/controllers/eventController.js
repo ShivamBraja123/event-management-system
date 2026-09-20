@@ -37,13 +37,18 @@ export const deleteEvent = async (req, res) => {
 export const listEvents = async (req, res) => {
   try {
     const { q, category, status, organizer } = req.query;
+    const page = Math.max(Number.parseInt(req.query.page, 10) || 1, 1);
+    const limit = Math.min(Math.max(Number.parseInt(req.query.limit, 10) || 60, 1), 100);
     const filter = {};
     if (q) filter.title = { $regex: q, $options: 'i' };
     if (category) filter.category = category;
     if (status) filter.status = status;
     if (organizer) filter.organizer = organizer;
-    const events = await Event.find(filter).populate('organizer', 'name').sort({ date: 1 });
-    res.json({ events });
+    const [events, total] = await Promise.all([
+      Event.find(filter).populate('organizer', 'name').sort({ date: 1 }).skip((page - 1) * limit).limit(limit),
+      Event.countDocuments(filter),
+    ]);
+    res.json({ events, pagination: { page, limit, total, pages: Math.ceil(total / limit), hasMore: page * limit < total } });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -59,5 +64,4 @@ export const getEvent = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-
 

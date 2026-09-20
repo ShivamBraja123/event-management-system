@@ -32,11 +32,7 @@ export default function Login() {
         <button className="btn w-full">Login</button>
       </form>
       <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3 text-sm">
-        <div className="font-semibold mb-1">Demo credentials</div>
         <ul className="space-y-1">
-          <li><span className="font-medium">Customer</span>: customer@example.com / password</li>
-          <li><span className="font-medium">Organizer</span>: organizer@example.com / password</li>
-          <li><span className="font-medium">Admin</span>: admin@example.com / password</li>
         </ul>
       </div>
       <div className="text-sm text-slate-600 mt-2">No account? <Link to="/signup" className="underline">Sign up</Link></div>

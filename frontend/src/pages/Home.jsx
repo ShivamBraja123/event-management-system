@@ -10,9 +10,10 @@ export default function Home() {
   const [dash, setDash] = useState({ categories: [], upcomingByMonth: [] });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [hasMore, setHasMore] = useState(false);
   const [q, setQ] = useState('');
   const [category, setCategory] = useState('');
-  const categories = ['All','Tech','Sports','Cultural','Workshop'];
+  const categories = ['All','Technology','Music','Sports','Business','Education','Cultural','Entertainment','Health & Wellness','Food & Lifestyle','Art','Conferences','Workshops','Networking','Festivals','Other'];
   const { announcements } = useSocket(window.location.origin);
   const { user } = useAuth();
 
@@ -32,16 +33,24 @@ export default function Home() {
     try {
       const effQ = overrides.q !== undefined ? overrides.q : q;
       const effCategory = overrides.category !== undefined ? overrides.category : category;
-      const params = {};
+      const params = { limit: 60, page: 1 };
       if (effQ) params.q = effQ;
       if (effCategory) params.category = effCategory;
       const res = await axios.get('/api/events', { params });
       setEvents(res.data.events || []);
+      setHasMore(Boolean(res.data.pagination?.hasMore));
     } catch (e) {
       setError('Failed to load events. Please ensure the backend is running.');
     } finally {
       setLoading(false);
     }
+
+  }
+
+  async function loadMore() {
+    const res = await axios.get('/api/events', { params: { q, category, page: Math.floor(events.length / 60) + 1, limit: 60 } });
+    setEvents(previous => [...previous, ...(res.data.events || [])]);
+    setHasMore(Boolean(res.data.pagination?.hasMore));
   }
 
   async function fetchRecs() {
@@ -154,6 +163,7 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {loading ? Array.from({length:6}).map((_,i)=><Skeleton key={i} />) : events.map((e) => <Card key={e._id} e={e} />)}
         </div>
+        {hasMore && <button className="btn-outline" onClick={loadMore}>Load more events</button>}
       </section>
 
       {/* Event Statistics Dashboard */}
