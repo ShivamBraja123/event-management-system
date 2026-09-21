@@ -10,9 +10,27 @@ export function AuthProvider({ children }) {
     return u ? JSON.parse(u) : null;
   });
 
+  const refreshUser = async () => {
+    if (!token) return;
+    try {
+      const res = await axios.get('/api/auth/me');
+      if (res.data?.user) {
+        setUser(prev => {
+          const updated = { ...prev, ...res.data.user };
+          localStorage.setItem('user', JSON.stringify(updated));
+          return updated;
+        });
+      }
+    } catch (_) {}
+  };
+
   useEffect(() => {
-    if (token) axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-    else delete axios.defaults.headers.common.Authorization;
+    if (token) {
+      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+      refreshUser();
+    } else {
+      delete axios.defaults.headers.common.Authorization;
+    }
   }, [token]);
 
   const login = (data) => {
@@ -29,7 +47,7 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
-  const value = useMemo(() => ({ token, user, login, logout }), [token, user]);
+  const value = useMemo(() => ({ token, user, login, logout, refreshUser }), [token, user]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

@@ -1,12 +1,14 @@
 import { Router } from 'express';
 import { authenticate } from '../middleware/auth.js';
 import { authorizeRoles } from '../middleware/roles.js';
-import { approveEvent, rejectEvent, listPendingEvents, blockUser, unblockUser } from '../controllers/adminController.js';
+import { approveEvent, rejectEvent, listPendingEvents, listOrganizers, updateOrganizerStatus, blockUser, unblockUser } from '../controllers/adminController.js';
 
 const router = Router();
 
 router.use(authenticate, authorizeRoles('admin'));
 router.get('/events/pending', listPendingEvents);
+router.get('/organizers', listOrganizers);
+router.patch('/organizers/:id/status', updateOrganizerStatus);
 router.post('/events/:id/approve', approveEvent);
 router.post('/events/:id/reject', rejectEvent);
 router.post('/users/:id/block', blockUser);

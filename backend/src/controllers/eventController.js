@@ -45,10 +45,23 @@ export const listEvents = async (req, res) => {
     if (status) filter.status = status;
     if (organizer) filter.organizer = organizer;
     const [events, total] = await Promise.all([
-      Event.find(filter).populate('organizer', 'name').sort({ date: 1 }).skip((page - 1) * limit).limit(limit),
+      Event.find(filter).populate('organizer', 'name email').sort({ date: 1 }).skip((page - 1) * limit).limit(limit).lean(),
       Event.countDocuments(filter),
     ]);
-    res.json({ events, pagination: { page, limit, total, pages: Math.ceil(total / limit), hasMore: page * limit < total } });
+
+    const eventIds = events.map(e => e._id);
+    const regCounts = await Registration.aggregate([
+      { $match: { event: { $in: eventIds }, status: { $ne: 'cancelled' } } },
+      { $group: { _id: '$event', count: { $sum: 1 } } },
+    ]);
+    const countMap = new Map(regCounts.map(r => [String(r._id), r.count]));
+    const eventsWithCounts = events.map(e => ({
+      ...e,
+      participantCount: countMap.get(String(e._id)) || 0,
+      registrations: countMap.get(String(e._id)) || 0,
+    }));
+
+    res.json({ events: eventsWithCounts, pagination: { page, limit, total, pages: Math.ceil(total / limit), hasMore: page * limit < total } });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -56,10 +69,10 @@ export const listEvents = async (req, res) => {
 
 export const getEvent = async (req, res) => {
   try {
-    const event = await Event.findById(req.params.id).populate('organizer', 'name');
+    const event = await Event.findById(req.params.id).populate('organizer', 'name email');
     if (!event) return res.status(404).json({ message: 'Not found' });
     const count = await Registration.countDocuments({ event: event._id, status: { $ne: 'cancelled' } });
-    res.json({ event, registrations: count });
+    res.json({ event, registrations: count, participantCount: count });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

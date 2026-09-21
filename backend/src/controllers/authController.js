@@ -4,28 +4,88 @@ import { generateJwtToken } from '../utils/generateToken.js';
 export const signup = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
-    const existing = await User.findOne({ email });
-    if (existing) return res.status(400).json({ message: 'Email already in use' });
-    const user = await User.create({ name, email, password, role });
-    const token = generateJwtToken({ id: user._id, role: user.role, name: user.name });
-    res.status(201).json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role } });
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: 'Name, email, and password are required.' });
+    }
+
+    const existing = await User.findOne({ email: email.toLowerCase() });
+    if (existing) return res.status(400).json({ message: 'Email already in use.' });
+
+    const userRole = role === 'organizer' ? 'organizer' : 'customer';
+    const user = await User.create({
+      name: name.trim(),
+      email: email.trim().toLowerCase(),
+      password,
+      role: userRole,
+      organizerStatus: userRole === 'organizer' ? 'pending' : 'approved',
+      status: userRole === 'organizer' ? 'pending' : 'approved',
+    });
+
+    const token = generateJwtToken({
+      id: user._id,
+      role: user.role,
+      name: user.name,
+      status: user.status,
+      organizerStatus: user.organizerStatus,
+    });
+
+    res.status(201).json({
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        status: user.status,
+        organizerStatus: user.organizerStatus,
+      },
+      message: userRole === 'organizer'
+        ? 'Organizer registration submitted for admin approval.'
+        : 'Registration successful.',
+    });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: err.message || 'Signup failed.' });
   }
 };
 
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email }).select('+password');
-    if (!user) return res.status(400).json({ message: 'Invalid credentials' });
-    if (user.isBlocked) return res.status(403).json({ message: 'User is blocked' });
+    const user = await User.findOne({ email: email?.trim().toLowerCase() }).select('+password');
+    if (!user) return res.status(400).json({ message: 'Invalid credentials.' });
+    if (user.isBlocked) return res.status(403).json({ message: 'User is blocked.' });
     const valid = await user.comparePassword(password);
-    if (!valid) return res.status(400).json({ message: 'Invalid credentials' });
-    const token = generateJwtToken({ id: user._id, role: user.role, name: user.name });
-    res.json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role } });
+    if (!valid) return res.status(400).json({ message: 'Invalid credentials.' });
+    const token = generateJwtToken({
+      id: user._id,
+      role: user.role,
+      name: user.name,
+      status: user.status,
+      organizerStatus: user.organizerStatus,
+    });
+
+    const payload = {
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        status: user.status,
+        organizerStatus: user.organizerStatus,
+      },
+    };
+
+    if (user.role === 'organizer' && user.organizerStatus === 'pending') {
+      payload.message = 'Your organizer account is pending approval.';
+    }
+    if (user.role === 'organizer' && user.organizerStatus === 'declined') {
+      payload.message = 'Your organizer request was declined.';
+    }
+
+    res.json(payload);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: err.message || 'Login failed.' });
   }
 };
 
@@ -33,7 +93,17 @@ export const me = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).lean();
     if (!user) return res.status(404).json({ message: 'Not found' });
-    res.json({ user: { id: user._id, name: user.name, email: user.email, role: user.role, points: user.points } });
+    res.json({
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        status: user.status,
+        organizerStatus: user.organizerStatus,
+        points: user.points,
+      },
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

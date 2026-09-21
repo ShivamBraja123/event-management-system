@@ -7,6 +7,16 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     password: { type: String, required: true, minlength: 6, select: false },
     role: { type: String, enum: ['customer', 'organizer', 'admin'], default: 'customer' },
+    status: {
+      type: String,
+      enum: ['pending', 'approved', 'declined'],
+      default: 'approved',
+    },
+    organizerStatus: {
+      type: String,
+      enum: ['pending', 'approved', 'declined'],
+      default: 'approved',
+    },
     isBlocked: { type: Boolean, default: false },
     points: { type: Number, default: 0 },
     interests: [{ type: String }],
@@ -16,6 +26,16 @@ const userSchema = new mongoose.Schema(
 );
 
 userSchema.pre('save', async function (next) {
+  if (this.role === 'organizer') {
+    if (this.isNew && !this.isModified('organizerStatus')) {
+      this.organizerStatus = 'pending';
+    }
+    this.status = this.organizerStatus;
+  } else {
+    this.organizerStatus = 'approved';
+    this.status = 'approved';
+  }
+
   if (!this.isModified('password')) return next();
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
@@ -24,6 +44,10 @@ userSchema.pre('save', async function (next) {
 
 userSchema.methods.comparePassword = function (candidate) {
   return bcrypt.compare(candidate, this.password);
+};
+
+userSchema.methods.isOrganizerApproved = function () {
+  return this.role !== 'organizer' || this.organizerStatus === 'approved';
 };
 
 export const User = mongoose.model('User', userSchema);
